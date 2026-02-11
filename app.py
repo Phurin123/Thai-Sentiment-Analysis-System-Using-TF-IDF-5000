@@ -36,7 +36,6 @@ MODELS_REGRESS_DIR = BASE_DIR / "models_regress"
 MODELS_LINEAR_DIR  = BASE_DIR / "models_linear"
 MODELS_RF_DIR      = BASE_DIR / "models_tree"   # ⚠️ ใช้ models_tree ตามที่คุณเทรน
 MODELS_NB_DIR      = BASE_DIR / "models_nb"
-MODELS_XGB_DIR     = BASE_DIR / "models_xgb"
 MODELS_LGBM_DIR    = BASE_DIR / "models_lgbm"
 MODELS_ET_DIR      = BASE_DIR / "models_et"
 
@@ -81,12 +80,6 @@ model_configs = {
         "name": "Naive Bayes",
         "version": "TF-IDF + Multinomial Naive Bayes"
     },
-    "xgb": {
-        "vec": MODELS_XGB_DIR / "vectorizer_20260210_173635_f77c0df7.joblib",
-        "model": MODELS_XGB_DIR / "sentiment_model_20260210_173635_f77c0df7.joblib",
-        "name": "XGBoost",
-        "version": "TF-IDF + XGBoost Classifier"
-    },
     "lgbm": {
         "vec": MODELS_LGBM_DIR / "vectorizer_20260210_173417_6ae59428.joblib",
         "model": MODELS_LGBM_DIR / "sentiment_model_20260210_173417_6ae59428.joblib",
@@ -112,34 +105,6 @@ for key, cfg in model_configs.items():
             "name": cfg["name"],
             "version": cfg["version"]
         }
-
-# ======================
-# Load BERT Model
-# ======================
-BERT_MODEL_LOADED = False
-bert_tokenizer = None
-bert_model = None
-torch = None
-
-try:
-    from transformers import AutoTokenizer, AutoModelForSequenceClassification
-    import torch
-
-    BERT_PATH = MODELS_DIR / "bert_thai_sentiment"
-    if BERT_PATH.exists():
-        bert_tokenizer = AutoTokenizer.from_pretrained(BERT_PATH)
-        bert_model = AutoModelForSequenceClassification.from_pretrained(
-            BERT_PATH,
-            num_labels=3
-        )
-        bert_model.eval()
-        BERT_MODEL_LOADED = True
-        print("✅ โหลด BERT สำเร็จ (3-class)")
-    else:
-        print("⚠️ ไม่พบโฟลเดอร์ BERT ที่ models/bert_thai_sentiment")
-except Exception as e:
-    print(f"❌ โหลด BERT ไม่ได้: {e}")
-    BERT_MODEL_LOADED = False
 
 # ======================
 # Global word sentiment (Model A only)
@@ -169,7 +134,7 @@ def get_global_word_sentiment():
 GLOBAL_WORD_SENTIMENT = get_global_word_sentiment()
 
 # ======================
-# Label mapping helper — ✅ เพิ่มใหม่!
+# Label mapping helper
 # ======================
 LABEL_MAP = {
     0: "NEGATIVE",
@@ -196,13 +161,13 @@ def normalize_label(label):
         return LABEL_MAP.get(label, str(label).upper())
 
 # ======================
-# Helper: Important words (Baseline models) — ✅ แก้ไขแล้ว!
+# Helper: Important words (Baseline models)
 # ======================
 def get_important_words(text: str, vectorizer, classifier, top_k: int = 5):
     X = vectorizer.transform([text])
     feature_names = vectorizer.get_feature_names_out()
 
-    # 🌳 1. Tree-based models: RF, XGBoost, LightGBM, Extra Trees
+    # 🌳 Tree-based models: RF, LightGBM, Extra Trees
     if hasattr(classifier, "feature_importances_"):
         imp = classifier.feature_importances_
         present = X.toarray()[0]
@@ -212,7 +177,7 @@ def get_important_words(text: str, vectorizer, classifier, top_k: int = 5):
         sents = [GLOBAL_WORD_SENTIMENT.get(w, "neutral") for w in words]
         return words[:top_k], sents[:top_k]
 
-    # 📈 2. Linear models: LogisticRegression, LinearSVC, Naive Bayes
+    # 📈 Linear models: LogisticRegression, LinearSVC, Naive Bayes
     elif hasattr(classifier, "coef_"):
         if hasattr(classifier, "predict_proba"):
             probs = classifier.predict_proba(X)[0]
@@ -240,69 +205,8 @@ def get_important_words(text: str, vectorizer, classifier, top_k: int = 5):
             sentiments.append(GLOBAL_WORD_SENTIMENT.get(word, "neutral"))
         return words, sentiments
 
-    # ❓ 3. Fallback
+    # ❓ Fallback
     else:
-        return [], []
-
-# ======================
-# BERT + LIME Explanation
-# ======================
-def bert_predict_proba(texts):
-    inputs = bert_tokenizer(
-        texts,
-        return_tensors="pt",
-        truncation=True,
-        padding=True,
-        max_length=128,
-        return_attention_mask=True
-    )
-    with torch.no_grad():
-        outputs = bert_model(**inputs)
-        probs = torch.softmax(outputs.logits, dim=-1).cpu().numpy()
-    return probs
-
-def get_bert_important_words(text: str, top_k: int = 5):
-    if not BERT_MODEL_LOADED:
-        return [], []
-
-    try:
-        import lime
-        import lime.lime_text
-
-        explainer = lime.lime_text.LimeTextExplainer(
-            class_names=["NEGATIVE", "NEUTRAL", "POSITIVE"],
-            verbose=False
-        )
-
-        exp = explainer.explain_instance(
-            text,
-            bert_predict_proba,
-            num_features=top_k,
-            num_samples=200,
-            labels=[0, 1, 2]
-        )
-
-        pred_proba = bert_predict_proba([text])[0]
-        pred_label_idx = int(np.argmax(pred_proba))
-
-        word_weights = exp.as_list(label=pred_label_idx)
-        words = []
-        sentiments = []
-
-        for word, weight in word_weights[:top_k]:
-            words.append(word)
-            if pred_label_idx == 0:  # NEGATIVE
-                s = "negative" if weight > 0 else "positive"
-            elif pred_label_idx == 2:  # POSITIVE
-                s = "positive" if weight > 0 else "negative"
-            else:  # NEUTRAL
-                s = "neutral"
-            sentiments.append(s)
-
-        return words, sentiments
-
-    except Exception as e:
-        print(f"LIME error: {e}")
         return [], []
 
 # ======================
@@ -318,8 +222,7 @@ def health():
     return {
         "status": "ok",
         "baseline_a": True,
-        "available_models": list(loaded_models.keys()) + (["bert"] if BERT_MODEL_LOADED else []),
-        "bert": BERT_MODEL_LOADED,
+        "available_models": list(loaded_models.keys()),  # ไม่มี bert
     }
 
 @app.get("/model/info")
@@ -335,11 +238,6 @@ def model_info():
         info[key] = {
             "name": mdl["name"],
             "version": mdl["version"],
-        }
-    if BERT_MODEL_LOADED:
-        info["bert"] = {
-            "name": "Thai BERT (wangchanberta)",
-            "path": "models/bert_thai_sentiment",
         }
     return info
 
@@ -405,7 +303,7 @@ def show_errors(request: Request):
     )
 
 # ======================
-# Predict Endpoints — ✅ แก้ไขให้ใช้ normalize_label()
+# Predict Endpoints
 # ======================
 
 @app.post("/predict")
@@ -413,7 +311,7 @@ def predict(text: str = Body(..., embed=True)):
     start = time.time()
     X = vectorizer_a.transform([text])
     pred_raw = classifier_a.predict(X)[0]
-    pred = normalize_label(pred_raw)  # ✅ แปลง label
+    pred = normalize_label(pred_raw)
     prob = float(np.max(classifier_a.predict_proba(X)[0]))
     latency = (time.time() - start) * 1000
     words, sents = get_important_words(text, vectorizer_a, classifier_a)
@@ -456,49 +354,12 @@ def predict_ab(
     }
 
     # ===== Model B =====
-    if model_b_type == "bert" and BERT_MODEL_LOADED:
-        start_b = time.time()
-        inputs = bert_tokenizer(
-            text,
-            return_tensors="pt",
-            truncation=True,
-            padding=True,
-            max_length=128,
-            return_attention_mask=True
-        )
-        with torch.no_grad():
-            outputs = bert_model(**inputs)
-            logits = outputs.logits
-            probs = torch.softmax(logits, dim=-1)
-            pred_idx = torch.argmax(probs, dim=-1).item()
-            confidence = probs[0][pred_idx].item()
-
-        latency_b = (time.time() - start_b) * 1000
-        words_b, sents_b = get_bert_important_words(text, top_k=5)
-        
-        if hasattr(bert_model.config, 'id2label'):
-            raw_label = bert_model.config.id2label[pred_idx].lower()
-            label_b = normalize_label(raw_label)
-        else:
-            id2label = {0: "NEGATIVE", 1: "NEUTRAL", 2: "POSITIVE"}
-            label_b = id2label.get(pred_idx, "UNKNOWN")
-
-        result["model_b"] = {
-            "label": label_b,
-            "confidence": round(confidence, 2),
-            "latency_ms": round(latency_b, 2),
-            "model_name": "Thai BERT",
-            "version": "wangchanberta + LIME",
-            "important_words": words_b,
-            "word_sentiments": sents_b,
-        }
-
-    elif model_b_type in loaded_models:
+    if model_b_type in loaded_models:
         mdl = loaded_models[model_b_type]
         start_b = time.time()
         Xb = mdl["vectorizer"].transform([text])
         pred_b_raw = mdl["classifier"].predict(Xb)[0]
-        pred_b = normalize_label(pred_b_raw)  # ✅ แปลง label
+        pred_b = normalize_label(pred_b_raw)
 
         # Confidence logic
         if hasattr(mdl["classifier"], "predict_proba"):
@@ -523,57 +384,13 @@ def predict_ab(
         }
 
     else:
-        available = list(loaded_models.keys()) + (["bert"] if BERT_MODEL_LOADED else [])
+        available = list(loaded_models.keys())
         raise HTTPException(
             status_code=400,
             detail=f"Model B type '{model_b_type}' not available. Available: {available}"
         )
 
     return result
-
-@app.post("/predict-bert")
-def predict_bert(text: str = Body(..., embed=True)):
-    if not BERT_MODEL_LOADED:
-        raise HTTPException(status_code=500, detail="BERT model not available")
-
-    start = time.time()
-    try:
-        inputs = bert_tokenizer(
-            text,
-            return_tensors="pt",
-            truncation=True,
-            padding=True,
-            max_length=128,
-            return_attention_mask=True
-        )
-
-        with torch.no_grad():
-            outputs = bert_model(**inputs)
-            logits = outputs.logits
-            probs = torch.softmax(logits, dim=-1)
-            pred_idx = torch.argmax(probs, dim=-1).item()
-            confidence = probs[0][pred_idx].item()
-
-        latency = (time.time() - start) * 1000
-        words, sents = get_bert_important_words(text, top_k=5)
-
-        if hasattr(bert_model.config, 'id2label'):
-            raw_label = bert_model.config.id2label[pred_idx].lower()
-            label = normalize_label(raw_label)
-        else:
-            id2label = {0: "NEGATIVE", 1: "NEUTRAL", 2: "POSITIVE"}
-            label = id2label.get(pred_idx, "UNKNOWN")
-
-        return {
-            "label": label,
-            "confidence": round(confidence, 2),
-            "latency_ms": round(latency, 2),
-            "model": "Thai BERT (wangchanberta + LIME)",
-            "important_words": words,
-            "word_sentiments": sents,
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"BERT prediction error: {str(e)}")
 
 # ======================
 # Feedback Logging
