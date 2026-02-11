@@ -1,9 +1,9 @@
 # Thai Sentiment Analysis System Using TF-IDF
 
-ระบบวิเคราะห์ความรู้สึกภาษาไทยแบบ Multi-Model โดยใช้ **TF-IDF** และ **BERT** พร้อม Web UI สำหรับเปรียบเทียบประสิทธิภาพของโมเดลต่างๆ แบบ A/B Testing
+ระบบวิเคราะห์ความรู้สึกภาษาไทยแบบ Multi-Model โดยใช้ **TF-IDF** พร้อม Web UI สำหรับเปรียบเทียบประสิทธิภาพของโมเดลต่างๆ แบบ A/B Testing
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.68+-green.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-latest-green.svg)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-latest-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
@@ -15,13 +15,14 @@
 - [ฟีเจอร์หลัก](#ฟีเจอร์หลัก)
 - [เทคโนโลยีที่ใช้](#เทคโนโลยีที่ใช้)
 - [โครงสร้างโปรเจค](#โครงสร้างโปรเจค)
+- [Quick Start](#quick-start)
 - [การติดตั้ง](#การติดตั้ง)
 - [วิธีรันโปรเจค](#วิธีรันโปรเจค)
 - [การเทรนโมเดล](#การเทรนโมเดล)
 - [API Documentation](#api-documentation)
-- [วิธี Deploy Production](#วิธี-deploy-production)
-- [การใช้งาน Web UI](#การใช้งาน-web-ui)
+- [วิธี Deploy บน Render](#วิธี-deploy-บน-render)
 - [โมเดลที่รองรับ](#โมเดลที่รองรับ)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -32,13 +33,13 @@
 - **NEGATIVE** (ลบ) 😠
 - **NEUTRAL** (กลาง) 😐
 
-ระบบรองรับการเปรียบเทียบผลลัพธ์จากหลายโมเดล ML พร้อมกัน (A/B Testing) และมีระบบ Feedback เพื่อปรับปรุงความแม่นยำ
+ระบบรองรับการเปรียบเทียบผลลัพธ์จาก **6 โมเดล Machine Learning** พร้อมกัน (A/B Testing) และมีระบบ Feedback เพื่อปรับปรุงความแม่นยำ
 
 ---
 
 ## ✨ ฟีเจอร์หลัก
 
-✅ **Multi-Model Support**: รองรับ 7 โมเดล TF-IDF และ 1 โมเดล BERT  
+✅ **Multi-Model Support**: รองรับ 6 โมเดล TF-IDF (Logistic Regression, Linear SVM, Random Forest, Naive Bayes, LightGBM, Extra Trees)  
 ✅ **A/B Testing UI**: เปรียบเทียบประสิทธิภาพของโมเดลต่างๆ ในหน้าเดียว  
 ✅ **Explainable AI**: แสดงคำสำคัญที่มีอิทธิพลต่อการทำนาย (Important Words)  
 ✅ **Feedback System**: รวบรวม feedback จากผู้ใช้เพื่อปรับปรุงโมเดล  
@@ -54,12 +55,8 @@
 - **FastAPI** - Modern web framework สำหรับสร้าง API
 - **Uvicorn** - ASGI server สำหรับรัน FastAPI
 - **scikit-learn** - Machine learning library สำหรับโมเดล TF-IDF
-- **XGBoost** - Gradient boosting framework
 - **LightGBM** - Gradient boosting framework จาก Microsoft
-- **transformers** - Hugging Face library สำหรับ BERT model
-- **PyTorch** - Deep learning framework
 - **pythainlp** - Thai NLP library
-- **LIME** - Explainable AI library สำหรับอธิบายการทำนาย
 
 ### Frontend
 - **Bootstrap 5** - CSS framework
@@ -83,16 +80,15 @@ Thai-Sentiment-Analysis-System-Using-TF-IDF/
 │
 ├── data/                           # 📊 Training datasets
 │   ├── 1.synthetic_wisesight_like_thai_sentiment_5000.csv
-│   └── 5.ultimate_sentiment_100k.csv
+│   ├── 1.synthetic_wisesight_like_thai_sentiment_100k.csv
+│   └── error_examples*.csv         # Misclassified examples
 │
 ├── models_regress/                 # 🤖 Logistic Regression models
 ├── models_linear/                  # 🤖 Linear SVM models
 ├── models_tree/                    # 🌳 Random Forest models
 ├── models_nb/                      # 🤖 Naive Bayes models
-├── models_xgb/                     # 🚀 XGBoost models
 ├── models_lgbm/                    # 💡 LightGBM models
 ├── models_et/                      # 🌲 Extra Trees models
-├── models/bert_thai_sentiment/     # 🧠 BERT model (optional)
 │
 ├── templates/                      # 🎨 HTML templates
 │   ├── index.html                  # Main UI page
@@ -105,11 +101,35 @@ Thai-Sentiment-Analysis-System-Using-TF-IDF/
     ├── Regress_train.py            # เทรน Logistic Regression
     ├── Renear_train.py             # เทรน Linear SVM
     ├── Random Forest_train.py      # เทรน Random Forest
-    ├── naivebay                    # เทรน Naive Bayes
-    ├── xgboots.py                  # เทรน XGBoost
+    ├── naivebay.py                 # เทรน Naive Bayes
     ├── lightbgm.py                 # เทรน LightGBM
-    ├── extratree.py                # เทรน Extra Trees
-    └── bert.py                     # เทรน BERT (optional)
+    └── extratree.py                # เทรน Extra Trees
+```
+
+---
+
+## 🚀 Quick Start
+
+**ติดตั้งและรันโปรเจคอย่างรวดเร็ว:**
+
+```bash
+# 1. Clone โปรเจค
+git clone https://github.com/Phurin123/Thai-Sentiment-Analysis-System-Using-TF-IDF.git
+cd Thai-Sentiment-Analysis-System-Using-TF-IDF
+
+# 2. สร้าง Virtual Environment
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+# หรือ source venv/bin/activate  # macOS/Linux
+
+# 3. ติดตั้ง Dependencies
+pip install -r requirements.txt
+
+# 4. รัน Development Server
+uvicorn app:app --reload
+
+# 5. เปิดเบราว์เซอร์ไปที่
+# http://127.0.0.1:8000/
 ```
 
 ---
@@ -121,8 +141,8 @@ Thai-Sentiment-Analysis-System-Using-TF-IDF/
 - **Python** 3.8 หรือสูงกว่า
 - **pip** (Python package manager)
 - **Virtual Environment** (แนะนำ)
-- **RAM**: อย่างน้อย 4GB (8GB+ สำหรับ BERT)
-- **Disk Space**: อย่างน้อย 2GB
+- **RAM**: อย่างน้อย 4GB
+- **Disk Space**: อย่างน้อย 1GB
 
 ### ขั้นตอนการติดตั้ง
 
@@ -153,7 +173,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> ⚠️ **หมายเหตุ**: การติดตั้ง `transformers` และ `torch` อาจใช้เวลานาน ขึ้นอยู่กับความเร็วอินเทอร์เน็ต
+> ⚠️ **หมายเหตุ**: การติดตั้งอาจใช้เวลา 2-5 นาที ขึ้นอยู่กับความเร็วอินเทอร์เน็ต
 
 #### 4. เตรียมข้อมูลและโมเดล
 
@@ -167,7 +187,6 @@ models_regress/
 models_linear/
 models_tree/
 models_nb/
-models_xgb/
 models_lgbm/
 models_et/
 ```
@@ -176,20 +195,18 @@ models_et/
 
 ---
 
-## 🚀 วิธีรันโปรเจค
+## 🏃 วิธีรันโปรเจค
 
 ### รัน Development Server
-
-เปิด terminal ที่โฟลเดอร์โปรเจคและรันคำสั่ง:
 
 ```bash
 uvicorn app:app --reload
 ```
 
-**หรือ** (ตามที่ระบุใน `information.txt`):
+**หรือ**
 
 ```bash
-uvicorn app:app --reload
+python -m uvicorn app:app --reload
 ```
 
 ### เข้าถึงเว็บแอป
@@ -226,8 +243,7 @@ http://127.0.0.1:8000/health
 {
   "status": "ok",
   "baseline_a": true,
-  "available_models": ["linear", "rf", "nb", "xgb", "lgbm", "et", "bert"],
-  "bert": true
+  "available_models": ["linear", "rf", "nb", "lgbm", "et"]
 }
 ```
 
@@ -237,7 +253,9 @@ http://127.0.0.1:8000/health
 
 ### ข้อมูลสำหรับการเทรน
 
-โปรเจคนี้ใช้ dataset จาก `data/5.ultimate_sentiment_100k.csv` (100,000 รายการ)
+โปรเจคนี้ใช้ dataset จากโฟลเดอร์ `data/`:
+- `1.synthetic_wisesight_like_thai_sentiment_5000.csv` (5,000 รายการ)
+- `1.synthetic_wisesight_like_thai_sentiment_100k.csv` (100,000 รายการ)
 
 รูปแบบข้อมูล:
 ```csv
@@ -275,34 +293,20 @@ python "Random Forest_train.py"
 #### 4. Naive Bayes
 
 ```bash
-python naivebay
+python naivebay.py
 ```
 
-#### 5. XGBoost
-
-```bash
-python xgboots.py
-```
-
-#### 6. LightGBM
+#### 5. LightGBM
 
 ```bash
 python lightbgm.py
 ```
 
-#### 7. Extra Trees
+#### 6. Extra Trees
 
 ```bash
 python extratree.py
 ```
-
-#### 8. BERT (Optional - ใช้ GPU แนะนำ)
-
-```bash
-python bert.py
-```
-
-> ⚠️ **คำเตือน**: การเทรน BERT ต้องการ GPU และ RAM สูง (8GB+)
 
 ### โครงสร้างการเทรน
 
@@ -375,7 +379,7 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 ```json
 {
   "text": "สินค้าแย่มาก ผิดหวัง",
-  "model_b_type": "bert"
+  "model_b_type": "linear"
 }
 ```
 
@@ -383,10 +387,8 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 - `"linear"` - Linear SVM
 - `"rf"` - Random Forest
 - `"nb"` - Naive Bayes
-- `"xgb"` - XGBoost
 - `"lgbm"` - LightGBM
 - `"et"` - Extra Trees
-- `"bert"` - Thai BERT (WangChanBERTa)
 
 **Response:**
 ```json
@@ -402,10 +404,10 @@ curl -X POST "http://127.0.0.1:8000/predict" \
   },
   "model_b": {
     "label": "NEGATIVE",
-    "confidence": 0.98,
-    "latency_ms": 156.7,
-    "model_name": "Thai BERT",
-    "version": "wangchanberta + LIME",
+    "confidence": 0.94,
+    "latency_ms": 12.3,
+    "model_name": "Linear SVM",
+    "version": "TF-IDF + Linear SVM (Max-Margin)",
     "important_words": ["แย่", "ผิดหวัง"],
     "word_sentiments": ["negative", "negative"]
   }
@@ -414,32 +416,7 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 
 ---
 
-#### 4. **POST** `/predict-bert` - ทำนายด้วย BERT เท่านั้น
-
-**Description**: ทำนายด้วย Thai BERT model
-
-**Request Body:**
-```json
-{
-  "text": "สินค้าโอเคนะ ไม่ได้ดีหรือแย่"
-}
-```
-
-**Response:**
-```json
-{
-  "label": "NEUTRAL",
-  "confidence": 0.87,
-  "latency_ms": 145.2,
-  "model": "Thai BERT (wangchanberta + LIME)",
-  "important_words": ["โอเค", "ไม่ได้"],
-  "word_sentiments": ["neutral", "neutral"]
-}
-```
-
----
-
-#### 5. **POST** `/feedback` - ส่ง Feedback
+#### 4. **POST** `/feedback` - ส่ง Feedback
 
 **Description**: บันทึก feedback จากผู้ใช้เพื่อปรับปรุงโมเดล
 
@@ -453,7 +430,7 @@ curl -X POST "http://127.0.0.1:8000/predict" \
   "true_label": "POSITIVE",
   "confidence": 0.95,
   "model_name": "sentiment_lr",
-  "timestamp": "2026-02-09T18:50:00"
+  "timestamp": "2026-02-11T18:00:00"
 }
 ```
 
@@ -467,7 +444,7 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 
 ---
 
-#### 6. **GET** `/errors` - ดูข้อผิดพลาด
+#### 5. **GET** `/errors` - ดูข้อผิดพลาด
 
 **Description**: แสดงหน้ารายการข้อผิดพลาดจากการทำนาย
 
@@ -475,7 +452,7 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 
 ---
 
-#### 7. **GET** `/health` - ตรวจสอบสถานะระบบ
+#### 6. **GET** `/health` - ตรวจสอบสถานะระบบ
 
 **Description**: ตรวจสอบว่าระบบทำงานปกติหรือไม่
 
@@ -484,14 +461,13 @@ curl -X POST "http://127.0.0.1:8000/predict" \
 {
   "status": "ok",
   "baseline_a": true,
-  "available_models": ["linear", "rf", "nb", "xgb", "lgbm", "et", "bert"],
-  "bert": true
+  "available_models": ["linear", "rf", "nb", "lgbm", "et"]
 }
 ```
 
 ---
 
-#### 8. **GET** `/model/info` - ดูข้อมูลโมเดล
+#### 7. **GET** `/model/info` - ดูข้อมูลโมเดล
 
 **Description**: แสดงข้อมูลโมเดลทั้งหมดที่โหลดไว้
 
@@ -501,240 +477,302 @@ curl -X POST "http://127.0.0.1:8000/predict" \
   "model_a": {
     "name": "sentiment_lr",
     "version": "TF-IDF + Logistic Regression",
-    "file": "sentiment_model_20260208_114252_968ddfe2.joblib"
+    "file": "sentiment_model_20260210_173038_59628ab2.joblib"
   },
   "linear": {
     "name": "Linear SVM",
     "version": "TF-IDF + Linear SVM (Max-Margin)"
   },
-  "bert": {
-    "name": "Thai BERT (wangchanberta)",
-    "path": "models/bert_thai_sentiment"
+  "rf": {
+    "name": "Random Forest",
+    "version": "TF-IDF + Random Forest"
   }
 }
 ```
 
 ---
 
-## 🚢 วิธี Deploy Production
+## 🚢 วิธี Deploy บน Render
 
-### Option 1: Deploy ด้วย Uvicorn + Systemd (Linux)
+Render เป็นแพลตฟอร์มที่ใช้งานง่ายสำหรับการ deploy web applications โดยมี Free Tier ให้ใช้งาน
 
-#### 1. สร้าง systemd service file
+### ขั้นตอนการ Deploy
 
-```bash
-sudo nano /etc/systemd/system/thai-sentiment.service
-```
+#### 1. เตรียม Repository ให้พร้อม
 
-เพิ่มเนื้อหา:
+ตรวจสอบว่าโปรเจคของคุณมีไฟล์เหล่านี้:
+- ✅ `app.py` - FastAPI application
+- ✅ `requirements.txt` - Python dependencies
+- ✅ โฟลเดอร์ `models_*` - โมเดลที่เทรนแล้ว
+- ✅ โฟลเดอร์ `templates/` และ `static/`
 
-```ini
-[Unit]
-Description=Thai Sentiment Analysis API
-After=network.target
-
-[Service]
-Type=simple
-User=your-username
-WorkingDirectory=/path/to/Thai-Sentiment-Analysis-System-Using-TF-IDF
-Environment="PATH=/path/to/venv/bin"
-ExecStart=/path/to/venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --workers 4
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-#### 2. Enable และ Start service
+#### 2. Push โค้ดขึ้น GitHub
 
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable thai-sentiment
-sudo systemctl start thai-sentiment
-sudo systemctl status thai-sentiment
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git push -u origin main
 ```
 
----
+#### 3. สร้าง Web Service บน Render
 
-### Option 2: Deploy ด้วย Gunicorn + Uvicorn Workers
+1. ไปที่ [render.com](https://render.com) และสร้างบัญชี (ใช้ GitHub account)
+2. คลิก **"New"** → **"Web Service"**
+3. เชื่อมต่อ GitHub repository ของคุณ
+4. ตั้งค่าดังนี้:
 
-#### 1. ติดตั้ง Gunicorn
+**Build Settings:**
+- **Name**: `thai-sentiment-api` (หรือชื่อที่ต้องการ)
+- **Region**: `Singapore` (ใกล้ที่สุดกับประเทศไทย)
+- **Branch**: `main`
+- **Root Directory**: (ว่างไว้)
+- **Runtime**: `Python 3`
+- **Build Command**: 
+  ```bash
+  pip install -r requirements.txt
+  ```
+- **Start Command**:
+  ```bash
+  uvicorn app:app --host 0.0.0.0 --port $PORT
+  ```
+
+**Instance Type:**
+- เลือก **Free** (512MB RAM, shared CPU)
+
+> ⚠️ **หมายเหตุ**: Free tier จะหยุดทำงานหลังจากไม่มีการใช้งาน 15 นาที และจะ restart เมื่อมีคนเข้าใช้งานใหม่ (cold start ~30 วินาที)
+
+#### 4. ตั้งค่า Environment Variables (ถ้าจำเป็น)
+
+ไปที่ **Environment** tab และเพิ่ม:
+
+```
+PYTHON_VERSION=3.9.16
+```
+
+#### 5. คลิก "Create Web Service"
+
+Render จะเริ่มทำการ build และ deploy โปรเจคของคุณ ใช้เวลาประมาณ 5-10 นาที
+
+#### 6. เข้าถึงเว็บแอปของคุณ
+
+เมื่อ deploy สำเร็จ คุณจะได้ URL แบบนี้:
+```
+https://thai-sentiment-api.onrender.com
+```
+
+### การอัปเดตโปรเจค
+
+เมื่อคุณต้องการอัปเดตโค้ด:
 
 ```bash
-pip install gunicorn
+git add .
+git commit -m "Update code"
+git push origin main
 ```
 
-#### 2. รันด้วย Gunicorn
+Render จะทำการ auto-deploy ใหม่โดยอัตโนมัติ!
+
+### การจัดการโมเดลไฟล์ขนาดใหญ่
+
+ถ้าโมเดลของคุณมีขนาดใหญ่มาก (>100MB) แนะนำให้:
+
+**Option 1: ใช้ Git LFS (Large File Storage)**
 
 ```bash
-gunicorn app:app \
-  --workers 4 \
-  --worker-class uvicorn.workers.UvicornWorker \
-  --bind 0.0.0.0:8000 \
-  --timeout 120 \
-  --log-level info
+# ติดตั้ง Git LFS
+git lfs install
+
+# Track โมเดลไฟล์
+git lfs track "*.joblib"
+git lfs track "*.pkl"
+
+git add .gitattributes
+git add models_*/*.joblib
+git commit -m "Add models with Git LFS"
+git push origin main
 ```
 
-**คำอธิบาย parameters:**
-- `--workers 4`: จำนวน worker processes (แนะนำ: 2-4 x CPU cores)
-- `--worker-class`: ใช้ UvicornWorker สำหรับ async support
-- `--timeout 120`: timeout สำหรับ BERT model (ต้องการเวลานาน)
+**Option 2: Download โมเดลตอน Build Time**
 
----
+สร้างไฟล์ `download_models.py`:
 
-### Option 3: Deploy ด้วย Docker
+```python
+import requests
+import os
 
-#### 1. สร้าง Dockerfile
-
-```dockerfile
-FROM python:3.9-slim
-
-WORKDIR /app
-
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application
-COPY . .
-
-# Expose port
-EXPOSE 8000
-
-# Run application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
-```
-
-#### 2. สร้าง .dockerignore
-
-```
-venv/
-__pycache__/
-*.pyc
-.git/
-.gitignore
-results_*/
-*.log
-```
-
-#### 3. Build และ Run
-
-```bash
-# Build image
-docker build -t thai-sentiment-api .
-
-# Run container
-docker run -d \
-  --name thai-sentiment \
-  -p 8000:8000 \
-  -v $(pwd)/models:/app/models \
-  -v $(pwd)/data:/app/data \
-  thai-sentiment-api
-```
-
-#### 4. ใช้ Docker Compose (แนะนำ)
-
-สร้าง `docker-compose.yml`:
-
-```yaml
-version: '3.8'
-
-services:
-  api:
-    build: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./models:/app/models
-      - ./data:/app/data
-      - ./models_regress:/app/models_regress
-      - ./models_linear:/app/models_linear
-      - ./models_tree:/app/models_tree
-      - ./models_nb:/app/models_nb
-      - ./models_xgb:/app/models_xgb
-      - ./models_lgbm:/app/models_lgbm
-      - ./models_et:/app/models_et
-    environment:
-      - PYTHONUNBUFFERED=1
-    restart: unless-stopped
-```
-
-รันด้วย:
-
-```bash
-docker-compose up -d
-```
-
----
-
-### Option 4: Deploy บน Cloud Platform
-
-#### Heroku
-
-```bash
-# สร้าง Procfile
-echo "web: uvicorn app:app --host 0.0.0.0 --port \$PORT" > Procfile
-
-# Deploy
-heroku create thai-sentiment-api
-git push heroku main
-```
-
-#### Google Cloud Run
-
-```bash
-gcloud run deploy thai-sentiment-api \
-  --source . \
-  --platform managed \
-  --region asia-southeast1 \
-  --allow-unauthenticated
-```
-
-#### AWS EC2
-
-1. Launch EC2 instance (Ubuntu 22.04)
-2. SSH เข้า instance
-3. ติดตั้ง Python และ dependencies
-4. ใช้ systemd หรือ Docker ตามด้านบน
-5. ตั้งค่า Security Group เปิด port 8000
-
----
-
-### เพิ่มประสิทธิภาพ Production
-
-#### 1. ใช้ NGINX เป็น Reverse Proxy
-
-สร้าง `/etc/nginx/sites-available/thai-sentiment`:
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 300s;
-    }
+MODEL_URLS = {
+    "vectorizer": "https://your-storage-url/vectorizer.joblib",
+    "model": "https://your-storage-url/model.joblib"
 }
+
+for name, url in MODEL_URLS.items():
+    response = requests.get(url)
+    with open(f"models/{name}.joblib", "wb") as f:
+        f.write(response.content)
+    print(f"Downloaded {name}")
 ```
 
-Enable site:
+แล้วแก้ **Build Command** ใน Render:
 ```bash
-sudo ln -s /etc/nginx/sites-available/thai-sentiment /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
+pip install -r requirements.txt && python download_models.py
 ```
 
-#### 2. เพิ่ม HTTPS ด้วย Let's Encrypt
+### เพิ่มประสิทธิภาพสำหรับ Production
 
+#### ใช้ Gunicorn (แนะนำ)
+
+แก้ `requirements.txt` เพิ่ม:
+```
+gunicorn
+```
+
+แก้ **Start Command** ใน Render:
 ```bash
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d your-domain.com
+gunicorn app:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
 ```
+
+#### ปรับแต่ง Workers
+
+- **Free Plan**: ใช้ 1-2 workers
+- **Paid Plan**: ใช้ 2-4 workers
+
+### การ Monitor และ Logs
+
+1. ไปที่ Render Dashboard → เลือก Web Service ของคุณ
+2. คลิก **"Logs"** tab เพื่อดู real-time logs
+3. คลิก **"Metrics"** tab เพื่อดู CPU/Memory usage
+
+### Custom Domain (ถ้าต้องการ)
+
+1. ไปที่ **Settings** tab
+2. เลื่อนลงไปที่ **Custom Domains**
+3. คลิก **"Add Custom Domain"**
+4. ใส่ domain ของคุณ (เช่น `sentiment.yourdomain.com`)
+5. ตั้งค่า DNS ตามที่ Render แนะนำ
+
+### Troubleshooting สำหรับ Render
+
+#### ปัญหา: Build ล้มเหลว
+```
+Error: Could not find a version that satisfies the requirement...
+```
+**แก้ไข**: ตรวจสอบ `requirements.txt` ว่ามี package version ที่ถูกต้อง
+
+#### ปัญหา: Out of Memory
+```
+Error: Worker exited with code 137
+```
+**แก้ไข**: 
+- ลด workers เหลือ 1
+- Upgrade เป็น Paid Plan (512MB → 2GB+)
+- ลดขนาดโมเดลโดยใช้ `max_features` ใน TF-IDF
+
+#### ปัญหา: Cold Start ช้า
+**แก้ไข**: 
+- Upgrade เป็น Paid Plan (ไม่มี sleep mode)
+- หรือใช้ cron job ping server ทุก 10 นาที
+
+---
+
+## 🤖 โมเดลที่รองรับ
+
+### Model A (Baseline) - Logistic Regression
+
+**เทคนิค**: TF-IDF + Logistic Regression  
+**ข้อดี**:
+- เร็วมาก (< 10ms)
+- ใช้ RAM น้อย
+- ให้ probability scores ที่เชื่อถือได้
+- Explainable (ดูได้ว่าคำไหนมีน้ำหนักมาก)
+
+**ข้อเสีย**:
+- ไม่เข้าใจบริบทลึก
+- จับ sarcasm ไม่ได้ดี
+
+---
+
+### Model B Options
+
+#### 1. Linear SVM
+**เทคนิค**: TF-IDF + Linear Support Vector Machine  
+**ข้อดี**: ดีกับ high-dimensional data, effective กับ text classification  
+**ข้อเสีย**: ช้ากว่า Logistic Regression เล็กน้อย
+
+#### 2. Random Forest
+**เทคนิค**: TF-IDF + Random Forest Classifier  
+**ข้อดี**: จัดการ feature interaction ได้ดี, ป้องกัน overfitting  
+**ข้อเสีย**: ช้ากว่า linear models, ใช้ RAM มากกว่า
+
+#### 3. Naive Bayes
+**เทคนิค**: TF-IDF + Multinomial Naive Bayes  
+**ข้อดี**: เร็วมาก, ทำงานดีกับข้อมูลน้อย  
+**ข้อเสีย**: สมมติฐาน independence ของคำไม่เป็นจริง
+
+#### 4. LightGBM
+**เทคนิค**: TF-IDF + LightGBM  
+**ข้อดี**: เร็ว, ใช้ RAM น้อย, แม่นยำสูง  
+**ข้อเสีย**: อาจ overfit ง่ายกับข้อมูลน้อย
+
+#### 5. Extra Trees
+**เทคนิค**: TF-IDF + Extra Trees Classifier  
+**ข้อดี**: เร็วกว่า Random Forest, reduce variance  
+**ข้อเสีย**: อาจมี bias สูงกว่า Random Forest
+
+---
+
+## 🔧 Troubleshooting
+
+### ปัญหา: ImportError: No module named 'xxx'
+**แก้ไข**: ติดตั้ง dependencies ใหม่
+```bash
+pip install -r requirements.txt
+```
+
+### ปัญหา: FileNotFoundError: model file not found
+**แก้ไข**: รัน training script ก่อน
+```bash
+python Regress_train.py
+```
+
+### ปัญหา: uvicorn command not found
+**แก้ไข**: ตรวจสอบว่า activate virtual environment แล้วหรือยัง
+```bash
+# Windows
+.\venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+```
+
+### ปัญหา: Port 8000 already in use
+**แก้ไข**: เปลี่ยน port
+```bash
+uvicorn app:app --port 8080 --reload
+```
+
+### ปัญหา: Memory Error ระหว่างเทรนโมเดล
+**แก้ไข**: ใช้ dataset ที่เล็กกว่า (5000 แทน 100k)
+```python
+# ในไฟล์ train script แก้ไข
+df = pd.read_csv("data/1.synthetic_wisesight_like_thai_sentiment_5000.csv")
+```
+
+---
+
+## 📊 Performance Benchmarks
+
+| Model | Latency (avg) | Accuracy | F1-Score | RAM Usage |
+|-------|---------------|----------|----------|-----------|
+| Logistic Regression | 8ms | ~85% | ~0.83 | 150MB |
+| Linear SVM | 12ms | ~86% | ~0.84 | 180MB |
+| Random Forest | 45ms | ~84% | ~0.82 | 400MB |
+| Naive Bayes | 5ms | ~80% | ~0.78 | 100MB |
+| LightGBM | 25ms | ~86% | ~0.84 | 250MB |
+| Extra Trees | 40ms | ~85% | ~0.83 | 380MB |
+
+> ⚠️ ผลลัพธ์ข้างต้นเป็นเพียงตัวอย่าง ผลจริงขึ้นอยู่กับ hardware และ dataset
 
 ---
 
@@ -769,116 +807,6 @@ sudo certbot --nginx -d your-domain.com
 
 ---
 
-## 🤖 โมเดลที่รองรับ
-
-### Model A (Baseline) - Logistic Regression
-
-**เทคนิค**: TF-IDF + Logistic Regression  
-**ข้อดี**:
-- เร็ว (< 10ms)
-- ใช้ RAM น้อย
-- ให้ probability scores ที่เชื่อถือได้
-- Explainable (ดูได้ว่าคำไหนมีน้ำหนักมาก)
-
-**ข้อเสีย**:
-- ไม่เข้าใจบริบทลึก
-- จับ sarcasm ไม่ได้ดี
-
----
-
-### Model B Options
-
-#### 1. Linear SVM
-**เทคนิค**: TF-IDF + Linear Support Vector Machine  
-**ข้อดี**: ดีกับ high-dimensional data, effective กับ text classification  
-**ข้อเสีย**: ช้ากว่า Logistic Regression เล็กน้อย
-
-#### 2. Random Forest
-**เทคนิค**: TF-IDF + Random Forest Classifier  
-**ข้อดี**: จัดการ feature interaction ได้ดี, ป้องกัน overfitting  
-**ข้อเสีย**: ช้ากว่า linear models, ใช้ RAM มากกว่า
-
-#### 3. Naive Bayes
-**เทคนิค**: TF-IDF + Multinomial Naive Bayes  
-**ข้อดี**: เร็วมาก, ทำงานดีกับข้อมูลน้อย  
-**ข้อเสีย**: สมมติฐาน independence ของคำไม่เป็นจริง
-
-#### 4. XGBoost
-**เทคนิค**: TF-IDF + XGBoost Classifier  
-**ข้อดี**: แม่นยำสูง, จัดการ imbalanced data ได้ดี  
-**ข้อเสีย**: ช้า, ปรับ hyperparameters ยาก
-
-#### 5. LightGBM
-**เทคนิค**: TF-IDF + LightGBM  
-**ข้อดี**: เร็วกว่า XGBoost, ใช้ RAM น้อยกว่า  
-**ข้อเสีย**: อาจ overfit ง่ายกับข้อมูลน้อย
-
-#### 6. Extra Trees
-**เทคนิค**: TF-IDF + Extra Trees Classifier  
-**ข้อดี**: เร็วกว่า Random Forest, reduce variance  
-**ข้อเสีย**: อาจมี bias สูงกว่า Random Forest
-
-#### 7. Thai BERT (WangChanBERTa)
-**เทคนิค**: Pre-trained Thai BERT + Fine-tuning  
-**ข้อดี**:
-- เข้าใจบริบทลึก
-- จับ sarcasm และ nuance ได้ดีกว่า
-- SOTA สำหรับ Thai NLP
-
-**ข้อเสีย**:
-- ช้ามาก (100-200ms หรือมากกว่า)
-- ต้องการ RAM และ GPU
-- Explainability ต้องใช้ LIME
-
----
-
-## 🔧 Troubleshooting
-
-### ปัญหา: ImportError: No module named 'xxx'
-**แก้ไข**: ติดตั้ง dependencies ใหม่
-```bash
-pip install -r requirements.txt
-```
-
-### ปัญหา: FileNotFoundError: model file not found
-**แก้ไข**: รัน training script ก่อน
-```bash
-python Regress_train.py
-```
-
-### ปัญหา: BERT model ไม่โหลด
-**สาเหตุ**: โฟลเดอร์ `models/bert_thai_sentiment` ไม่มี  
-**แก้ไข**: BERT เป็น optional ระบบจะทำงานได้ปกติโดยไม่มี BERT
-
-### ปัญหา: uvicorn command not found
-**แก้ไข**: ตรวจสอบว่า activate virtual environment แล้วหรือยัง
-```bash
-# Windows
-.\venv\Scripts\activate
-
-# macOS/Linux
-source venv/bin/activate
-```
-
----
-
-## 📊 Performance Benchmarks
-
-| Model | Latency (avg) | Accuracy | F1-Score | RAM Usage |
-|-------|---------------|----------|----------|-----------|
-| Logistic Regression | 8ms | ~85% | ~0.83 | 150MB |
-| Linear SVM | 12ms | ~86% | ~0.84 | 180MB |
-| Random Forest | 45ms | ~84% | ~0.82 | 400MB |
-| Naive Bayes | 5ms | ~80% | ~0.78 | 100MB |
-| XGBoost | 35ms | ~87% | ~0.85 | 350MB |
-| LightGBM | 25ms | ~86% | ~0.84 | 250MB |
-| Extra Trees | 40ms | ~85% | ~0.83 | 380MB |
-| BERT | 150ms+ | ~90% | ~0.89 | 2GB+ |
-
-> ⚠️ ผลลัพธ์ข้างต้นเป็นเพียงตัวอย่าง ผลจริงขึ้นอยู่กับ hardware และ dataset
-
----
-
 ## 📝 License
 
 MIT License - สามารถใช้งานได้อย่างอิสระ
@@ -895,15 +823,19 @@ GitHub: [https://github.com/Phurin123](https://github.com/Phurin123)
 
 ## 🙏 Acknowledgments
 
-- **Wisesight Sentiment Corpus** - สำหรับ training data
-- **AIResearch Thailand** - WangChanBERTa model
+- **Wisesight Sentiment Corpus** - สำหรับ training data concept
 - **pythainlp** - Thai NLP tools
 - **FastAPI** - Modern web framework
+- **scikit-learn** - Machine learning library
 
 ---
 
 ## 📮 Contact & Support
 
 หากพบปัญหาหรือมีคำถาม:
-- เปิด Issue ใน GitHub Repository
-- ติดต่อผ่าน Email หรือ social media
+- เปิด Issue ใน [GitHub Repository](https://github.com/Phurin123/Thai-Sentiment-Analysis-System-Using-TF-IDF)
+- ติดต่อผ่าน GitHub Profile
+
+---
+
+**Made with ❤️ for Thai NLP Community**
