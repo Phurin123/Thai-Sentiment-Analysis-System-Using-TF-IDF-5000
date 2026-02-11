@@ -3,467 +3,265 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>เปรียบเทียบโมเดลวิเคราะห์ความรู้สึก</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      .sentiment-tab {
-        font-weight: bold;
-        padding: 10px 20px;
-        cursor: pointer;
-        border-bottom: 3px solid transparent;
-      }
-
-      .sentiment-tab.active {
-        border-bottom-color: #0d6efd;
-        color: #0d6efd;
-      }
-
-      .btn-analyze {
-        background-color: #0d6efd;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 20px;
-        border: none;
-      }
-
-      .result-box {
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 20px;
-        margin-top: 20px;
-      }
-
-      .label-negative {
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 5px 10px;
-        border-radius: 5px;
-      }
-
-      .label-positive {
-        background-color: #d4edda;
-        color: #155724;
-        padding: 5px 10px;
-        border-radius: 5px;
-      }
-
-      .label-neutral {
-        background-color: #fff3cd;
-        color: #856404;
-        padding: 5px 10px;
-        border-radius: 5px;
-      }
-
-      .word-tag {
-        display: inline-block;
-        margin: 5px;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 0.9em;
-      }
-
-      .positive-word {
-        background-color: #d4edda;
-        color: #155724;
-      }
-
-      .neutral-word {
-        background-color: #fff3cd;
-        color: #856404;
-      }
-
-      .negative-word {
-        background-color: #f8d7da;
-        color: #721c24;
-      }
-
-      .progress-bar-container {
-        height: 10px;
-        background-color: #e9ecef;
-        border-radius: 5px;
-        margin: 10px 0;
-      }
-
-      .progress-bar-fill {
-        height: 100%;
-        border-radius: 5px;
-      }
-
-      .toggle-switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-      }
-
-      .toggle-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: 0.4s;
-        border-radius: 34px;
-      }
-
-      .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: 0.4s;
-        border-radius: 50%;
-      }
-
-      input:checked + .slider {
-        background-color: #2196f3;
-      }
-
-      input:checked + .slider:before {
-        transform: translateX(26px);
-      }
-
-      .feedback-buttons {
-        margin-top: 10px;
-      }
-
-      .feedback-btn {
-        font-size: 1.2em;
-        margin-right: 10px;
-        cursor: pointer;
-        opacity: 0.7;
-        transition: opacity 0.2s;
-      }
-
-      .feedback-btn:hover {
-        opacity: 1;
-      }
-
-      .feedback-btn.selected {
-        opacity: 1;
-        filter: brightness(1.2);
-      }
-
-      .true-label-section {
-        display: none;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px dashed #ddd;
-      }
-
-      .submit-feedback-btn {
-        margin-top: 8px;
-      }
-
-      .bert-badge {
-        background-color: #6f42c1;
-        color: white;
-        font-size: 0.8em;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-left: 6px;
-      }
-    </style>
+    <title>Thai Sentiment Analysis — เปรียบเทียบโมเดล</title>
+    <meta name="description" content="ระบบวิเคราะห์ความรู้สึกข้อความภาษาไทย ด้วย TF-IDF และเปรียบเทียบ A/B Testing หลายโมเดล" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   </head>
 
-  <body class="bg-light">
-    <div class="container mt-4">
-      <div class="card shadow-sm p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="d-flex gap-3">
-            <div class="sentiment-tab active" id="tab-sentiment">Sentiment</div>
-          </div>
-          <div class="d-flex align-items-center">
-            <!-- Toggle A/B -->
-            <div class="toggle-switch me-2">
-              <input type="checkbox" id="ab-toggle" checked />
-              <span class="slider"></span>
-            </div>
-            <label for="ab-toggle" class="me-3">เปรียบเทียบ A/B</label>
+  <body>
+    <div class="app-container">
+      <!-- ===== Header ===== -->
+      <header class="app-header">
+        <h1><i class="fas fa-brain"></i> Thai Sentiment Analysis</h1>
+        <p>ระบบวิเคราะห์ความรู้สึกข้อความภาษาไทย — เปรียบเทียบ A/B Testing</p>
+      </header>
 
-            <!-- Dropdown: เลือก Model B -->
-            <select
-              id="model-b-select"
-              class="form-select form-select-sm"
-              style="width: auto; display: block"
-            >
-              <option value="linear">Model B: Linear SVM</option>
-              <option value="rf">Model B: Random Forest</option>
-              <option value="nb">Model B: Naive Bayes</option>
-              <option value="lgbm">Model B: LightGBM</option>
-              <option value="et">Model B: Extra Trees</option>
+      <!-- ===== Main Card ===== -->
+      <div class="glass-card" style="position:relative;">
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+          <div class="spinner"></div>
+        </div>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+          <div class="controls-left">
+            <span class="tab-badge">
+              <i class="fas fa-chart-line"></i> Sentiment
+            </span>
+          </div>
+          <div class="controls-right">
+            <div class="toggle-wrapper">
+              <label class="toggle-switch">
+                <input type="checkbox" id="ab-toggle" checked />
+                <span class="slider"></span>
+              </label>
+              <label for="ab-toggle">เปรียบเทียบ A/B</label>
+            </div>
+            <select id="model-b-select" class="model-select">
+              <option value="linear">Linear SVM</option>
+              <option value="rf">Random Forest</option>
+              <option value="nb">Naive Bayes</option>
+              <option value="lgbm">LightGBM</option>
+              <option value="et">Extra Trees</option>
             </select>
           </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">ข้อความ:</label>
+        <!-- Text Input -->
+        <div class="input-area">
+          <label for="input-text"><i class="fas fa-pen-to-square"></i> ข้อความ:</label>
           <textarea
             id="input-text"
-            class="form-control"
+            class="input-textarea"
             rows="4"
-            placeholder="พิมพ์ข้อความที่ต้องการวิเคราะห์..."
+            placeholder="พิมพ์ข้อความที่ต้องการวิเคราะห์ความรู้สึก..."
           ></textarea>
         </div>
 
-        <!-- ปุ่ม: วิเคราะห์ + ตัวอย่างข้อความ + ดูข้อผิดพลาด -->
-        <div class="d-flex gap-2 flex-wrap">
-          <button id="analyze-btn" class="btn-analyze">วิเคราะห์</button>
-          <button id="sample-btn" class="btn btn-outline-primary">
-            โหลดตัวอย่างข้อความ
+        <!-- Action Buttons -->
+        <div class="btn-group">
+          <button id="analyze-btn" class="btn-primary-glow">
+            <i class="fas fa-magnifying-glass-chart"></i> วิเคราะห์
           </button>
-          <a href="/errors" class="btn btn-outline-secondary"
-            >ดูตัวอย่างข้อผิดพลาด</a
-          >
+          <button id="sample-btn" class="btn-ghost">
+            <i class="fas fa-shuffle"></i> โหลดตัวอย่าง
+          </button>
+          <a href="/errors" class="btn-ghost">
+            <i class="fas fa-triangle-exclamation"></i> ดูข้อผิดพลาด
+          </a>
         </div>
 
-        <div id="results-container" class="mt-4" style="display: none">
-          <h5 class="text-center mb-3">ผลลัพธ์การเปรียบเทียบโมเดล A และ B</h5>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="result-box">
-                <h6>โมเดล A: Logistic Regression</h6>
-                <div id="model-a-label" class="label-neutral mb-2">NEUTRAL</div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span
-                    >Confidence: <span id="model-a-confidence">0.00</span></span
-                  >
-                  <span>Latency: <span id="model-a-latency">0</span> ms</span>
+        <!-- ===== Results Section ===== -->
+        <div id="results-container" class="results-section" style="display: none">
+          <h4 class="results-title"><i class="fas fa-scale-balanced"></i> ผลลัพธ์การวิเคราะห์</h4>
+          <div class="results-grid" id="results-grid">
+            <!-- Model A Card -->
+            <div class="result-card card-a" id="card-a">
+              <div class="result-card-header">
+                <h3><i class="fas fa-robot"></i> โมเดล A</h3>
+                <span class="model-badge">Logistic Regression</span>
+              </div>
+
+              <div id="model-a-label" class="sentiment-badge neutral">
+                <i class="fas fa-minus-circle"></i> <span>NEUTRAL</span>
+              </div>
+
+              <div class="metrics-row">
+                <div class="metric">
+                  <span class="metric-label">Confidence</span>
+                  <span class="metric-value confidence-val" id="model-a-confidence">0.00</span>
                 </div>
-                <div class="progress-bar-container">
-                  <div
-                    id="model-a-progress"
-                    class="progress-bar-fill"
-                    style="width: 0%; background-color: #ffc107"
-                  ></div>
-                </div>
-                <p class="mt-3">
-                  โมเดล:
-                  <span id="model-a-name">-</span>
-                </p>
-                <p>คำสำคัญ:</p>
-                <div id="model-a-words" class="d-flex flex-wrap"></div>
-                <div class="feedback-buttons">
-                  <span
-                    class="feedback-btn"
-                    data-model="a"
-                    data-feedback="correct"
-                    >👍</span
-                  >
-                  <span
-                    class="feedback-btn"
-                    data-model="a"
-                    data-feedback="incorrect"
-                    >👎</span
-                  >
-                  <small class="text-muted">(กดเพื่อให้ feedback)</small>
-                </div>
-                <!-- True label section for Model A -->
-                <div class="true-label-section" data-model="a">
-                  <select class="form-select true-label-select">
-                    <option value="">เลือกความรู้สึกที่ถูกต้อง</option>
-                    <option value="POSITIVE">😊 บวก</option>
-                    <option value="NEGATIVE">😠 ลบ</option>
-                    <option value="NEUTRAL">😐 กลาง</option>
-                  </select>
-                  <button
-                    class="btn btn-sm btn-primary submit-feedback-btn"
-                    data-model="a"
-                  >
-                    ส่ง Feedback
-                  </button>
+                <div class="metric">
+                  <span class="metric-label">Latency</span>
+                  <span class="metric-value latency-val"><span id="model-a-latency">0</span> ms</span>
                 </div>
               </div>
+
+              <div class="progress-track">
+                <div id="model-a-progress" class="progress-fill neutral" style="width: 0%"></div>
+              </div>
+
+              <div class="model-info">
+                <i class="fas fa-microchip"></i> <span id="model-a-name">-</span>
+              </div>
+
+              <div class="words-section">
+                <div class="words-section-title"><i class="fas fa-key"></i> คำสำคัญ</div>
+                <div id="model-a-words" class="words-container"></div>
+              </div>
+
+              <div class="feedback-row">
+                <span class="feedback-btn" data-model="a" data-feedback="correct">👍</span>
+                <span class="feedback-btn" data-model="a" data-feedback="incorrect">👎</span>
+                <span class="feedback-hint">กดเพื่อให้ feedback</span>
+              </div>
+
+              <div class="true-label-section" data-model="a">
+                <select class="true-label-select">
+                  <option value="">เลือกความรู้สึกที่ถูกต้อง</option>
+                  <option value="POSITIVE">😊 บวก (Positive)</option>
+                  <option value="NEGATIVE">😠 ลบ (Negative)</option>
+                  <option value="NEUTRAL">😐 กลาง (Neutral)</option>
+                </select>
+                <button class="btn-submit-feedback" data-model="a">
+                  <i class="fas fa-paper-plane"></i> ส่ง Feedback
+                </button>
+              </div>
             </div>
-            <div class="col-md-6">
-              <div class="result-box">
-                <h6>
-                  โมเดล B: <span id="model-b-type-display">Linear SVM</span>
-                </h6>
-                <div id="model-b-label" class="label-neutral mb-2">NEUTRAL</div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span
-                    >Confidence: <span id="model-b-confidence">0.00</span></span
-                  >
-                  <span>Latency: <span id="model-b-latency">0</span> ms</span>
+
+            <!-- Model B Card -->
+            <div class="result-card card-b" id="card-b">
+              <div class="result-card-header">
+                <h3><i class="fas fa-robot"></i> โมเดล B</h3>
+                <span class="model-badge" id="model-b-badge">Linear SVM</span>
+              </div>
+
+              <div id="model-b-label" class="sentiment-badge neutral">
+                <i class="fas fa-minus-circle"></i> <span>NEUTRAL</span>
+              </div>
+
+              <div class="metrics-row">
+                <div class="metric">
+                  <span class="metric-label">Confidence</span>
+                  <span class="metric-value confidence-val" id="model-b-confidence">0.00</span>
                 </div>
-                <div class="progress-bar-container">
-                  <div
-                    id="model-b-progress"
-                    class="progress-bar-fill"
-                    style="width: 0%; background-color: #ffc107"
-                  ></div>
+                <div class="metric">
+                  <span class="metric-label">Latency</span>
+                  <span class="metric-value latency-val"><span id="model-b-latency">0</span> ms</span>
                 </div>
-                <p class="mt-3">
-                  โมเดล:
-                  <span id="model-b-name">-</span>
-                </p>
-                <p>คำสำคัญ:</p>
-                <div id="model-b-words" class="d-flex flex-wrap"></div>
-                <div class="feedback-buttons">
-                  <span
-                    class="feedback-btn"
-                    data-model="b"
-                    data-feedback="correct"
-                    >👍</span
-                  >
-                  <span
-                    class="feedback-btn"
-                    data-model="b"
-                    data-feedback="incorrect"
-                    >👎</span
-                  >
-                  <small class="text-muted">(กดเพื่อให้ feedback)</small>
-                </div>
-                <!-- True label section for Model B -->
-                <div class="true-label-section" data-model="b">
-                  <select class="form-select true-label-select">
-                    <option value="">เลือกความรู้สึกที่ถูกต้อง</option>
-                    <option value="POSITIVE">😊 บวก</option>
-                    <option value="NEGATIVE">😠 ลบ</option>
-                    <option value="NEUTRAL">😐 กลาง</option>
-                  </select>
-                  <button
-                    class="btn btn-sm btn-primary submit-feedback-btn"
-                    data-model="b"
-                  >
-                    ส่ง Feedback
-                  </button>
-                </div>
+              </div>
+
+              <div class="progress-track">
+                <div id="model-b-progress" class="progress-fill neutral" style="width: 0%"></div>
+              </div>
+
+              <div class="model-info">
+                <i class="fas fa-microchip"></i> <span id="model-b-name">-</span>
+              </div>
+
+              <div class="words-section">
+                <div class="words-section-title"><i class="fas fa-key"></i> คำสำคัญ</div>
+                <div id="model-b-words" class="words-container"></div>
+              </div>
+
+              <div class="feedback-row">
+                <span class="feedback-btn" data-model="b" data-feedback="correct">👍</span>
+                <span class="feedback-btn" data-model="b" data-feedback="incorrect">👎</span>
+                <span class="feedback-hint">กดเพื่อให้ feedback</span>
+              </div>
+
+              <div class="true-label-section" data-model="b">
+                <select class="true-label-select">
+                  <option value="">เลือกความรู้สึกที่ถูกต้อง</option>
+                  <option value="POSITIVE">😊 บวก (Positive)</option>
+                  <option value="NEGATIVE">😠 ลบ (Negative)</option>
+                  <option value="NEUTRAL">😐 กลาง (Neutral)</option>
+                </select>
+                <button class="btn-submit-feedback" data-model="b">
+                  <i class="fas fa-paper-plane"></i> ส่ง Feedback
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Footer -->
+      <div style="text-align:center; margin-top:24px; color:var(--text-muted); font-size:0.78rem;">
+        <p>Thai Sentiment Analysis System — TF-IDF + ML Models &middot; Built with FastAPI</p>
+      </div>
     </div>
 
-    <!-- Toast container -->
-    <div
-      id="toast-container"
-      style="position: fixed; bottom: 20px; right: 20px; z-index: 1000"
-    ></div>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const analyzeBtn = document.getElementById("analyze-btn");
         const sampleBtn = document.getElementById("sample-btn");
         const inputText = document.getElementById("input-text");
         const resultsContainer = document.getElementById("results-container");
+        const resultsGrid = document.getElementById("results-grid");
         const abToggle = document.getElementById("ab-toggle");
         const modelBSelect = document.getElementById("model-b-select");
-        const modelBTypeDisplay = document.getElementById(
-          "model-b-type-display",
-        );
+        const modelBBadge = document.getElementById("model-b-badge");
+        const cardB = document.getElementById("card-b");
+        const loadingOverlay = document.getElementById("loading-overlay");
 
-        // อัปเดตชื่อ Model B ใน UI
+        // Model B display name
+        const modelBNames = {
+          linear: "Linear SVM",
+          rf: "Random Forest",
+          nb: "Naive Bayes",
+          lgbm: "LightGBM",
+          et: "Extra Trees",
+        };
+
         modelBSelect.addEventListener("change", () => {
-          const selected =
-            modelBSelect.options[modelBSelect.selectedIndex].text;
-          modelBTypeDisplay.textContent = selected.split(": ")[1] || "Unknown";
+          const val = modelBSelect.value;
+          modelBBadge.textContent = modelBNames[val] || val;
         });
 
-        // ซ่อน/แสดง dropdown เมื่อเปิด/ปิด A/B
-        abToggle.addEventListener("change", () => {
-          modelBSelect.style.display = abToggle.checked ? "block" : "none";
-        });
+        // Toggle A/B
+        function updateABVisibility() {
+          const isAB = abToggle.checked;
+          modelBSelect.style.display = isAB ? "block" : "none";
+          if (resultsContainer.style.display !== "none") {
+            cardB.style.display = isAB ? "block" : "none";
+            resultsGrid.classList.toggle("single-mode", !isAB);
+          }
+        }
+        abToggle.addEventListener("change", updateABVisibility);
+        updateABVisibility();
 
+        // ========== Sample Text Generator ==========
         function pick(arr) {
           return arr[Math.floor(Math.random() * arr.length)];
         }
 
         function generateSampleText() {
           const products = [
-            "สินค้า",
-            "ของ",
-            "สิ่งนี้",
-            "ไอเทม",
-            "ของที่สั่ง",
-            "พัสดุ",
-            "ของชิ้นนี้",
-            "เสื้อ",
-            "รองเท้า",
-            "โทรศัพท์",
-            "เคสโทรศัพท์",
-            "หูฟัง",
-            "กระเป๋า",
-            "นาฬิกา",
-            "ครีม",
-            "มาสก์หน้า",
-            "อาหารเสริม",
-            "ของเล่น",
-            "อุปกรณ์แต่งหน้า",
+            "สินค้า","ของ","สิ่งนี้","ไอเทม","ของที่สั่ง","พัสดุ","ของชิ้นนี้",
+            "เสื้อ","รองเท้า","โทรศัพท์","เคสโทรศัพท์","หูฟัง","กระเป๋า","นาฬิกา",
+            "ครีม","มาสก์หน้า","อาหารเสริม","ของเล่น","อุปกรณ์แต่งหน้า",
           ];
-
           const positives = [
-            "ดีมาก",
-            "ประทับใจ",
-            "คุ้มค่า",
-            "ใช้งานดี",
-            "สวย",
-            "ใส่สบาย",
-            "เร็ว",
-            "ทนทาน",
-            "แพ็กดี",
-            "ส่งไว",
-            "ของแท้",
-            "คุณภาพเกินราคา",
-            "ชอบมาก",
-            "ไม่ผิดหวัง",
+            "ดีมาก","ประทับใจ","คุ้มค่า","ใช้งานดี","สวย","ใส่สบาย","เร็ว",
+            "ทนทาน","แพ็กดี","ส่งไว","ของแท้","คุณภาพเกินราคา","ชอบมาก","ไม่ผิดหวัง",
           ];
-
           const negatives = [
-            "แย่",
-            "ไม่ดี",
-            "ผิดหวัง",
-            "คุณภาพต่ำ",
-            "ของปลอม",
-            "ส่งช้า",
-            "แพ็กแย่",
-            "ใช้ไม่ได้",
-            "หลุดลอก",
-            "ไม่ตรงปก",
-            "กลิ่นแรง",
-            "ขนาดไม่ถูก",
-            "ชำรุด",
-            "ไม่คุ้มราคา",
-            "ซื้อแล้วเสียดาย",
+            "แย่","ไม่ดี","ผิดหวัง","คุณภาพต่ำ","ของปลอม","ส่งช้า","แพ็กแย่",
+            "ใช้ไม่ได้","หลุดลอก","ไม่ตรงปก","กลิ่นแรง","ขนาดไม่ถูก","ชำรุด",
+            "ไม่คุ้มราคา","ซื้อแล้วเสียดาย",
           ];
-
-          const neutrals = [
-            "โอเคนะ",
-            "พอใช้ได้",
-            "กลางๆ",
-            "ไม่ได้แย่",
-            "ยังไม่ประทับใจ",
-            "เฉยๆ",
-          ];
+          const neutrals = ["โอเคนะ","พอใช้ได้","กลางๆ","ไม่ได้แย่","ยังไม่ประทับใจ","เฉยๆ"];
           const reasons = [
-            "แต่ส่งช้าไปหน่อย",
-            "แต่คุณภาพไม่ค่อยดี",
-            "แต่ราคาแพงเกิน",
-            "แต่สีเพี้ยน",
-            "แต่ขนาดเล็กกว่าที่คิด",
-            "แต่ใช้ได้ไม่นาน",
-            "แต่แพ็กไม่ดี",
-            "แต่ไม่ค่อยตรงตามรีวิว",
+            "แต่ส่งช้าไปหน่อย","แต่คุณภาพไม่ค่อยดี","แต่ราคาแพงเกิน","แต่สีเพี้ยน",
+            "แต่ขนาดเล็กกว่าที่คิด","แต่ใช้ได้ไม่นาน","แต่แพ็กไม่ดี","แต่ไม่ค่อยตรงตามรีวิว",
           ];
-          const emojis = ["😊", "😍", "👍", "👎", "😤", "😐", "🤔", "😅", "🫠"];
-
+          const emojis = ["😊","😍","👍","👎","😤","😐","🤔","😅","🫠"];
           const patterns = [
             () => `${pick(products)} ${pick(positives)} มากกก! ${pick(emojis)}`,
             () => `สั่งมาแล้วไม่ผิดหวังเลย ${pick(positives)} จริงๆ 😍`,
@@ -478,29 +276,32 @@
             () => `ดีในบางจุด แต่${pick(reasons)} 😅`,
             () => `ไม่ได้แย่ แต่ก็ไม่ได้ดีมาก ให้ 3 ดาวละกัน`,
           ];
-
           return pick(patterns)();
         }
 
         sampleBtn.addEventListener("click", () => {
           inputText.value = generateSampleText();
+          inputText.focus();
         });
 
+        // ========== Analyze ==========
         analyzeBtn.addEventListener("click", async () => {
           const text = inputText.value.trim();
           if (!text) {
-            alert("กรุณากรอกข้อความ!");
+            showToast("กรุณากรอกข้อความ!", "error");
             return;
           }
+
+          // Show loading
+          loadingOverlay.classList.add("active");
+          resultsContainer.style.display = "none";
 
           try {
             let url, body;
             if (!abToggle.checked) {
-              // โหมดเดียว: ใช้ Model A เท่านั้น
               url = "/predict";
               body = JSON.stringify({ text });
             } else {
-              // โหมดเปรียบเทียบ: ส่ง model_b_type
               const modelBType = modelBSelect.value;
               url = "/predict-ab";
               body = JSON.stringify({ text, model_b_type: modelBType });
@@ -521,77 +322,135 @@
 
             if (!abToggle.checked) {
               updateResultsSingle(data);
+              cardB.style.display = "none";
+              resultsGrid.classList.add("single-mode");
             } else {
               updateResultsAB(data);
+              cardB.style.display = "block";
+              resultsGrid.classList.remove("single-mode");
             }
 
             resultsContainer.style.display = "block";
 
-            // เคลียร์ feedback state
-            document
-              .querySelectorAll(".feedback-btn")
-              .forEach((btn) => btn.classList.remove("selected"));
-            document
-              .querySelectorAll(".true-label-section")
-              .forEach((sec) => (sec.style.display = "none"));
+            // Clear feedback state
+            document.querySelectorAll(".feedback-btn").forEach((btn) => btn.classList.remove("selected"));
+            document.querySelectorAll(".true-label-section").forEach((sec) => (sec.style.display = "none"));
+
           } catch (error) {
             console.error(error);
-            alert("เกิดข้อผิดพลาด: " + error.message);
+            showToast("เกิดข้อผิดพลาด: " + error.message, "error");
+          } finally {
+            loadingOverlay.classList.remove("active");
           }
         });
 
-        // ========== Feedback & Rendering (เหมือนเดิม) ==========
+        // ========== Rendering ==========
+        function getSentimentIcon(label) {
+          if (label === "POSITIVE") return "fa-face-smile";
+          if (label === "NEGATIVE") return "fa-face-angry";
+          return "fa-minus-circle";
+        }
+
+        function getSentimentClass(label) {
+          if (label === "POSITIVE") return "positive";
+          if (label === "NEGATIVE") return "negative";
+          return "neutral";
+        }
+
+        function updateSentimentBadge(elementId, label) {
+          const el = document.getElementById(elementId);
+          const cls = getSentimentClass(label);
+          el.className = `sentiment-badge ${cls}`;
+          el.innerHTML = `<i class="fas ${getSentimentIcon(label)}"></i> <span>${label}</span>`;
+        }
+
+        function updateProgressBar(elementId, confidence, label) {
+          const bar = document.getElementById(elementId);
+          const cls = getSentimentClass(label);
+          bar.className = `progress-fill ${cls}`;
+          bar.style.width = `${Math.min(confidence * 100, 100)}%`;
+        }
+
+        function updateResultsAB(data) {
+          const a = data.model_a;
+          updateSentimentBadge("model-a-label", a.label);
+          document.getElementById("model-a-confidence").textContent = a.confidence;
+          document.getElementById("model-a-latency").textContent = a.latency_ms;
+          updateProgressBar("model-a-progress", a.confidence, a.label);
+          document.getElementById("model-a-name").textContent = `${a.model_name} • ${a.version}`;
+          renderWords("model-a-words", a.important_words || [], a.word_sentiments || []);
+
+          const b = data.model_b;
+          if (b) {
+            updateSentimentBadge("model-b-label", b.label);
+            document.getElementById("model-b-confidence").textContent = b.confidence;
+            document.getElementById("model-b-latency").textContent = b.latency_ms;
+            updateProgressBar("model-b-progress", b.confidence, b.label);
+            document.getElementById("model-b-name").textContent = `${b.model_name} • ${b.version}`;
+            renderWords("model-b-words", b.important_words || [], b.word_sentiments || []);
+          }
+        }
+
+        function updateResultsSingle(data) {
+          updateSentimentBadge("model-a-label", data.label);
+          document.getElementById("model-a-confidence").textContent = data.confidence;
+          document.getElementById("model-a-latency").textContent = data.latency_ms;
+          updateProgressBar("model-a-progress", data.confidence, data.label);
+          document.getElementById("model-a-name").textContent = `${data.model} • ${data.version}`;
+          renderWords("model-a-words", data.important_words || [], data.word_sentiments || []);
+        }
+
+        function renderWords(containerId, words, sentiments) {
+          const container = document.getElementById(containerId);
+          container.innerHTML = "";
+          words.forEach((word, i) => {
+            const span = document.createElement("span");
+            span.textContent = word;
+            span.className = `word-tag ${sentiments[i]}-word`;
+            container.appendChild(span);
+          });
+        }
+
+        // ========== Feedback ==========
         function attachFeedbackListeners() {
           document.querySelectorAll(".feedback-btn").forEach((btn) => {
             btn.addEventListener("click", (e) => {
-              const model = e.target.dataset.model;
-              const feedback = e.target.dataset.feedback;
+              const model = e.target.dataset.model || e.target.closest('.feedback-btn').dataset.model;
+              const feedback = e.target.dataset.feedback || e.target.closest('.feedback-btn').dataset.feedback;
               const text = inputText.value.trim();
               if (!text) return;
 
-              document
-                .querySelectorAll(`.feedback-btn[data-model="${model}"]`)
+              document.querySelectorAll(`.feedback-btn[data-model="${model}"]`)
                 .forEach((b) => b.classList.remove("selected"));
-              e.target.classList.add("selected");
+              e.target.closest('.feedback-btn') ?
+                e.target.closest('.feedback-btn').classList.add("selected") :
+                e.target.classList.add("selected");
 
-              const section = document.querySelector(
-                `.true-label-section[data-model="${model}"]`,
-              );
+              const section = document.querySelector(`.true-label-section[data-model="${model}"]`);
               if (feedback === "incorrect") {
                 section.style.display = "block";
                 section.querySelector("select").value = "";
               } else {
                 section.style.display = "none";
+                const labelEl = document.getElementById(`model-${model}-label`);
+                const confEl = document.getElementById(`model-${model}-confidence`);
+                const nameEl = document.getElementById(`model-${model}-name`);
                 sendFeedback({
                   text,
                   model: model === "a" ? "model_a" : "model_b",
                   feedback: "correct",
-                  predicted_label:
-                    model === "a"
-                      ? document.getElementById("model-a-label").textContent
-                      : document.getElementById("model-b-label").textContent,
-                  confidence: parseFloat(
-                    model === "a"
-                      ? document.getElementById("model-a-confidence")
-                          .textContent
-                      : document.getElementById("model-b-confidence")
-                          .textContent,
-                  ),
-                  model_name:
-                    model === "a"
-                      ? document.getElementById("model-a-name").textContent
-                      : document.getElementById("model-b-name").textContent,
+                  predicted_label: labelEl.querySelector("span").textContent,
+                  confidence: parseFloat(confEl.textContent),
+                  model_name: nameEl.textContent,
                 });
               }
             });
           });
 
-          document.querySelectorAll(".submit-feedback-btn").forEach((btn) => {
+          document.querySelectorAll(".btn-submit-feedback").forEach((btn) => {
             btn.addEventListener("click", async (e) => {
-              const model = e.target.dataset.model;
-              const section = document.querySelector(
-                `.true-label-section[data-model="${model}"]`,
-              );
+              const model = e.target.dataset.model || e.target.closest('.btn-submit-feedback').dataset.model;
+              const section = document.querySelector(`.true-label-section[data-model="${model}"]`);
               const select = section.querySelector("select");
               const trueLabel = select.value;
               if (!trueLabel) {
@@ -602,28 +461,20 @@
               const text = inputText.value.trim();
               if (!text) return;
 
-              const payload = {
+              const labelEl = document.getElementById(`model-${model}-label`);
+              const confEl = document.getElementById(`model-${model}-confidence`);
+              const nameEl = document.getElementById(`model-${model}-name`);
+
+              await sendFeedback({
                 text,
                 model: model === "a" ? "model_a" : "model_b",
                 feedback: "incorrect",
                 true_label: trueLabel,
-                predicted_label:
-                  model === "a"
-                    ? document.getElementById("model-a-label").textContent
-                    : document.getElementById("model-b-label").textContent,
-                confidence: parseFloat(
-                  model === "a"
-                    ? document.getElementById("model-a-confidence").textContent
-                    : document.getElementById("model-b-confidence").textContent,
-                ),
-                model_name:
-                  model === "a"
-                    ? document.getElementById("model-a-name").textContent
-                    : document.getElementById("model-b-name").textContent,
+                predicted_label: labelEl.querySelector("span").textContent,
+                confidence: parseFloat(confEl.textContent),
+                model_name: nameEl.textContent,
                 timestamp: new Date().toISOString(),
-              };
-
-              await sendFeedback(payload);
+              });
               section.style.display = "none";
             });
           });
@@ -641,8 +492,9 @@
             if (res.ok) {
               showToast(
                 payload.feedback === "correct"
-                  ? "ขอบคุณสำหรับ feedback!"
-                  : "ขอบคุณที่ช่วยปรับปรุงระบบ!",
+                  ? "✅ ขอบคุณสำหรับ feedback!"
+                  : "📝 ขอบคุณที่ช่วยปรับปรุงระบบ!",
+                "success"
               );
             } else {
               showToast("ส่ง feedback ไม่สำเร็จ", "error");
@@ -653,106 +505,30 @@
           }
         }
 
+        // ========== Toast ==========
         function showToast(message, type = "success") {
           const toast = document.createElement("div");
-          toast.className = `alert alert-${type === "error" ? "danger" : "success"} alert-dismissible fade show`;
-          toast.style.minWidth = "250px";
-          toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+          toast.className = `toast-msg ${type}`;
+          toast.innerHTML = `
+            <span>${message}</span>
+            <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+          `;
           document.getElementById("toast-container").appendChild(toast);
           setTimeout(() => {
-            if (toast.parentNode) toast.parentNode.removeChild(toast);
-          }, 3000);
+            if (toast.parentNode) {
+              toast.style.opacity = "0";
+              toast.style.transform = "translateY(10px)";
+              setTimeout(() => toast.remove(), 300);
+            }
+          }, 3500);
         }
 
-        function getColor(label) {
-          if (label === "POSITIVE") return "#28a745";
-          if (label === "NEGATIVE") return "#dc3545";
-          return "#ffc107";
-        }
-
-        function updateResultsAB(data) {
-          // Model A
-          const a = data.model_a;
-          document.getElementById("model-a-label").textContent = a.label;
-          document.getElementById("model-a-label").className =
-            `label-${a.label.toLowerCase()} mb-2`;
-          document.getElementById("model-a-confidence").textContent =
-            a.confidence;
-          document.getElementById("model-a-latency").textContent = a.latency_ms;
-          document.getElementById("model-a-progress").style.width =
-            `${a.confidence * 100}%`;
-          document.getElementById("model-a-progress").style.backgroundColor =
-            getColor(a.label);
-          document.getElementById("model-a-name").textContent =
-            `${a.model_name} • ${a.version}`;
-          renderWords(
-            "model-a-words",
-            a.important_words || [],
-            a.word_sentiments || [],
-          );
-
-          // Model B
-          const b = data.model_b;
-          if (b) {
-            document.getElementById("model-b-label").textContent = b.label;
-            document.getElementById("model-b-label").className =
-              `label-${b.label.toLowerCase()} mb-2`;
-            document.getElementById("model-b-confidence").textContent =
-              b.confidence;
-            document.getElementById("model-b-latency").textContent =
-              b.latency_ms;
-            document.getElementById("model-b-progress").style.width =
-              `${b.confidence * 100}%`;
-            document.getElementById("model-b-progress").style.backgroundColor =
-              getColor(b.label);
-            document.getElementById("model-b-name").textContent =
-              `${b.model_name} • ${b.version}`;
-            renderWords(
-              "model-b-words",
-              b.important_words || [],
-              b.word_sentiments || [],
-            );
-            document.querySelector(".col-md-6:nth-child(2)").style.display =
-              "block";
-          } else {
-            document.querySelector(".col-md-6:nth-child(2)").style.display =
-              "none";
+        // Allow Enter key (Ctrl+Enter) to analyze
+        inputText.addEventListener("keydown", (e) => {
+          if (e.ctrlKey && e.key === "Enter") {
+            analyzeBtn.click();
           }
-        }
-
-        function updateResultsSingle(data) {
-          document.getElementById("model-a-label").textContent = data.label;
-          document.getElementById("model-a-label").className =
-            `label-${data.label.toLowerCase()} mb-2`;
-          document.getElementById("model-a-confidence").textContent =
-            data.confidence;
-          document.getElementById("model-a-latency").textContent =
-            data.latency_ms;
-          document.getElementById("model-a-progress").style.width =
-            `${data.confidence * 100}%`;
-          document.getElementById("model-a-progress").style.backgroundColor =
-            getColor(data.label);
-          document.getElementById("model-a-name").textContent =
-            `${data.model} • ${data.version}`;
-          renderWords(
-            "model-a-words",
-            data.important_words || [],
-            data.word_sentiments || [],
-          );
-          document.querySelector(".col-md-6:nth-child(2)").style.display =
-            "none";
-        }
-
-        function renderWords(containerId, words, sentiments) {
-          const container = document.getElementById(containerId);
-          container.innerHTML = "";
-          words.forEach((word, i) => {
-            const span = document.createElement("span");
-            span.textContent = word;
-            span.className = `word-tag ${sentiments[i]}-word`;
-            container.appendChild(span);
-          });
-        }
+        });
       });
     </script>
   </body>
