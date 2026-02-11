@@ -836,6 +836,3 @@ GitHub: [https://github.com/Phurin123](https://github.com/Phurin123)
 - เปิด Issue ใน [GitHub Repository](https://github.com/Phurin123/Thai-Sentiment-Analysis-System-Using-TF-IDF)
 - ติดต่อผ่าน GitHub Profile
 
----
-
-**Made with ❤️ for Thai NLP Community**
