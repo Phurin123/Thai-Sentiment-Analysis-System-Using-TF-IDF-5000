@@ -36,7 +36,7 @@ X = df["text"]
 y = df["label"]
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.4, random_state=42, stratify=y
+    X, y, test_size=0.2, random_state=42, stratify=y
 )
 
 # === 4. Train baseline model (TF-IDF + Logistic Regression) ===
