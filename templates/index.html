@@ -4,15 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thai Sentiment Analysis — เปรียบเทียบโมเดล</title>
-    <meta
-      name="description"
-      content="ระบบวิเคราะห์ความรู้สึกข้อความภาษาไทย ด้วย TF-IDF และเปรียบเทียบ A/B Testing หลายโมเดล"
-    />
+    <meta name="description" content="ระบบวิเคราะห์ความรู้สึกข้อความภาษาไทย ด้วย TF-IDF และเปรียบเทียบ A/B Testing หลายโมเดล" />
     <link rel="stylesheet" href="/static/style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   </head>
 
   <body>
@@ -24,7 +18,7 @@
       </header>
 
       <!-- ===== Main Card ===== -->
-      <div class="glass-card" style="position: relative">
+      <div class="glass-card" style="position:relative;">
         <!-- Loading Overlay -->
         <div class="loading-overlay" id="loading-overlay">
           <div class="spinner"></div>
@@ -57,9 +51,7 @@
 
         <!-- Text Input -->
         <div class="input-area">
-          <label for="input-text"
-            ><i class="fas fa-pen-to-square"></i> ข้อความ:</label
-          >
+          <label for="input-text"><i class="fas fa-pen-to-square"></i> ข้อความ:</label>
           <textarea
             id="input-text"
             class="input-textarea"
@@ -82,14 +74,8 @@
         </div>
 
         <!-- ===== Results Section ===== -->
-        <div
-          id="results-container"
-          class="results-section"
-          style="display: none"
-        >
-          <h4 class="results-title">
-            <i class="fas fa-scale-balanced"></i> ผลลัพธ์การวิเคราะห์
-          </h4>
+        <div id="results-container" class="results-section" style="display: none">
+          <h4 class="results-title"><i class="fas fa-scale-balanced"></i> ผลลัพธ์การวิเคราะห์</h4>
           <div class="results-grid" id="results-grid">
             <!-- Model A Card -->
             <div class="result-card card-a" id="card-a">
@@ -105,46 +91,25 @@
               <div class="metrics-row">
                 <div class="metric">
                   <span class="metric-label">Confidence</span>
-                  <span
-                    class="metric-value confidence-val"
-                    id="model-a-confidence"
-                    >0.00</span
-                  >
+                  <span class="metric-value confidence-val" id="model-a-confidence">0.00</span>
                 </div>
                 <div class="metric">
                   <span class="metric-label">Latency</span>
-                  <span class="metric-value latency-val"
-                    ><span id="model-a-latency">0</span> ms</span
-                  >
+                  <span class="metric-value latency-val"><span id="model-a-latency">0</span> ms</span>
                 </div>
               </div>
 
               <div class="progress-track">
-                <div
-                  id="model-a-progress"
-                  class="progress-fill neutral"
-                  style="width: 0%"
-                ></div>
+                <div id="model-a-progress" class="progress-fill neutral" style="width: 0%"></div>
               </div>
 
               <div class="model-info">
-                <i class="fas fa-microchip"></i>
-                <span id="model-a-name">-</span>
+                <i class="fas fa-microchip"></i> <span id="model-a-name">-</span>
               </div>
 
               <div class="feedback-row">
-                <span
-                  class="feedback-btn"
-                  data-model="a"
-                  data-feedback="correct"
-                  >👍</span
-                >
-                <span
-                  class="feedback-btn"
-                  data-model="a"
-                  data-feedback="incorrect"
-                  >👎</span
-                >
+                <span class="feedback-btn" data-model="a" data-feedback="correct">👍</span>
+                <span class="feedback-btn" data-model="a" data-feedback="incorrect">👎</span>
                 <span class="feedback-hint">กดเพื่อให้ feedback</span>
               </div>
 
@@ -175,46 +140,25 @@
               <div class="metrics-row">
                 <div class="metric">
                   <span class="metric-label">Confidence</span>
-                  <span
-                    class="metric-value confidence-val"
-                    id="model-b-confidence"
-                    >0.00</span
-                  >
+                  <span class="metric-value confidence-val" id="model-b-confidence">0.00</span>
                 </div>
                 <div class="metric">
                   <span class="metric-label">Latency</span>
-                  <span class="metric-value latency-val"
-                    ><span id="model-b-latency">0</span> ms</span
-                  >
+                  <span class="metric-value latency-val"><span id="model-b-latency">0</span> ms</span>
                 </div>
               </div>
 
               <div class="progress-track">
-                <div
-                  id="model-b-progress"
-                  class="progress-fill neutral"
-                  style="width: 0%"
-                ></div>
+                <div id="model-b-progress" class="progress-fill neutral" style="width: 0%"></div>
               </div>
 
               <div class="model-info">
-                <i class="fas fa-microchip"></i>
-                <span id="model-b-name">-</span>
+                <i class="fas fa-microchip"></i> <span id="model-b-name">-</span>
               </div>
 
               <div class="feedback-row">
-                <span
-                  class="feedback-btn"
-                  data-model="b"
-                  data-feedback="correct"
-                  >👍</span
-                >
-                <span
-                  class="feedback-btn"
-                  data-model="b"
-                  data-feedback="incorrect"
-                  >👎</span
-                >
+                <span class="feedback-btn" data-model="b" data-feedback="correct">👍</span>
+                <span class="feedback-btn" data-model="b" data-feedback="incorrect">👎</span>
                 <span class="feedback-hint">กดเพื่อให้ feedback</span>
               </div>
 
@@ -235,18 +179,8 @@
       </div>
 
       <!-- Footer -->
-      <div
-        style="
-          text-align: center;
-          margin-top: 24px;
-          color: var(--text-muted);
-          font-size: 0.78rem;
-        "
-      >
-        <p>
-          Thai Sentiment Analysis System — TF-IDF + ML Models &middot; Built
-          with FastAPI
-        </p>
+      <div style="text-align:center; margin-top:24px; color:var(--text-muted); font-size:0.78rem;">
+        <p>Thai Sentiment Analysis System — TF-IDF + ML Models &middot; Built with FastAPI</p>
       </div>
     </div>
 
@@ -299,78 +233,25 @@
 
         function generateSampleText() {
           const products = [
-            "สินค้า",
-            "ของ",
-            "สิ่งนี้",
-            "ไอเทม",
-            "ของที่สั่ง",
-            "พัสดุ",
-            "ของชิ้นนี้",
-            "เสื้อ",
-            "รองเท้า",
-            "โทรศัพท์",
-            "เคสโทรศัพท์",
-            "หูฟัง",
-            "กระเป๋า",
-            "นาฬิกา",
-            "ครีม",
-            "มาสก์หน้า",
-            "อาหารเสริม",
-            "ของเล่น",
-            "อุปกรณ์แต่งหน้า",
+            "สินค้า","ของ","สิ่งนี้","ไอเทม","ของที่สั่ง","พัสดุ","ของชิ้นนี้",
+            "เสื้อ","รองเท้า","โทรศัพท์","เคสโทรศัพท์","หูฟัง","กระเป๋า","นาฬิกา",
+            "ครีม","มาสก์หน้า","อาหารเสริม","ของเล่น","อุปกรณ์แต่งหน้า",
           ];
           const positives = [
-            "ดีมาก",
-            "ประทับใจ",
-            "คุ้มค่า",
-            "ใช้งานดี",
-            "สวย",
-            "ใส่สบาย",
-            "เร็ว",
-            "ทนทาน",
-            "แพ็กดี",
-            "ส่งไว",
-            "ของแท้",
-            "คุณภาพเกินราคา",
-            "ชอบมาก",
-            "ไม่ผิดหวัง",
+            "ดีมาก","ประทับใจ","คุ้มค่า","ใช้งานดี","สวย","ใส่สบาย","เร็ว",
+            "ทนทาน","แพ็กดี","ส่งไว","ของแท้","คุณภาพเกินราคา","ชอบมาก","ไม่ผิดหวัง",
           ];
           const negatives = [
-            "แย่",
-            "ไม่ดี",
-            "ผิดหวัง",
-            "คุณภาพต่ำ",
-            "ของปลอม",
-            "ส่งช้า",
-            "แพ็กแย่",
-            "ใช้ไม่ได้",
-            "หลุดลอก",
-            "ไม่ตรงปก",
-            "กลิ่นแรง",
-            "ขนาดไม่ถูก",
-            "ชำรุด",
-            "ไม่คุ้มราคา",
-            "ซื้อแล้วเสียดาย",
+            "แย่","ไม่ดี","ผิดหวัง","คุณภาพต่ำ","ของปลอม","ส่งช้า","แพ็กแย่",
+            "ใช้ไม่ได้","หลุดลอก","ไม่ตรงปก","กลิ่นแรง","ขนาดไม่ถูก","ชำรุด",
+            "ไม่คุ้มราคา","ซื้อแล้วเสียดาย",
           ];
-          const neutrals = [
-            "โอเคนะ",
-            "พอใช้ได้",
-            "กลางๆ",
-            "ไม่ได้แย่",
-            "ยังไม่ประทับใจ",
-            "เฉยๆ",
-          ];
+          const neutrals = ["โอเคนะ","พอใช้ได้","กลางๆ","ไม่ได้แย่","ยังไม่ประทับใจ","เฉยๆ"];
           const reasons = [
-            "แต่ส่งช้าไปหน่อย",
-            "แต่คุณภาพไม่ค่อยดี",
-            "แต่ราคาแพงเกิน",
-            "แต่สีเพี้ยน",
-            "แต่ขนาดเล็กกว่าที่คิด",
-            "แต่ใช้ได้ไม่นาน",
-            "แต่แพ็กไม่ดี",
-            "แต่ไม่ค่อยตรงตามรีวิว",
+            "แต่ส่งช้าไปหน่อย","แต่คุณภาพไม่ค่อยดี","แต่ราคาแพงเกิน","แต่สีเพี้ยน",
+            "แต่ขนาดเล็กกว่าที่คิด","แต่ใช้ได้ไม่นาน","แต่แพ็กไม่ดี","แต่ไม่ค่อยตรงตามรีวิว",
           ];
-          const emojis = ["😊", "😍", "👍", "👎", "😤", "😐", "🤔", "😅", "🫠"];
+          const emojis = ["😊","😍","👍","👎","😤","😐","🤔","😅","🫠"];
           const patterns = [
             () => `${pick(products)} ${pick(positives)} มากกก! ${pick(emojis)}`,
             () => `สั่งมาแล้วไม่ผิดหวังเลย ${pick(positives)} จริงๆ 😍`,
@@ -442,12 +323,9 @@
             resultsContainer.style.display = "block";
 
             // Clear feedback state
-            document
-              .querySelectorAll(".feedback-btn")
-              .forEach((btn) => btn.classList.remove("selected"));
-            document
-              .querySelectorAll(".true-label-section")
-              .forEach((sec) => (sec.style.display = "none"));
+            document.querySelectorAll(".feedback-btn").forEach((btn) => btn.classList.remove("selected"));
+            document.querySelectorAll(".true-label-section").forEach((sec) => (sec.style.display = "none"));
+
           } catch (error) {
             console.error(error);
             showToast("เกิดข้อผิดพลาด: " + error.message, "error");
@@ -486,95 +364,52 @@
         function updateResultsAB(data) {
           const a = data.model_a;
           updateSentimentBadge("model-a-label", a.label);
-          document.getElementById("model-a-confidence").textContent =
-            a.confidence;
+          document.getElementById("model-a-confidence").textContent = a.confidence;
           document.getElementById("model-a-latency").textContent = a.latency_ms;
           updateProgressBar("model-a-progress", a.confidence, a.label);
-          document.getElementById("model-a-name").textContent =
-            `${a.model_name} • ${a.version}`;
-          renderWords(
-            "model-a-words",
-            a.important_words || [],
-            a.word_sentiments || [],
-          );
+          document.getElementById("model-a-name").textContent = `${a.model_name} • ${a.version}`;
 
           const b = data.model_b;
           if (b) {
             updateSentimentBadge("model-b-label", b.label);
-            document.getElementById("model-b-confidence").textContent =
-              b.confidence;
-            document.getElementById("model-b-latency").textContent =
-              b.latency_ms;
+            document.getElementById("model-b-confidence").textContent = b.confidence;
+            document.getElementById("model-b-latency").textContent = b.latency_ms;
             updateProgressBar("model-b-progress", b.confidence, b.label);
-            document.getElementById("model-b-name").textContent =
-              `${b.model_name} • ${b.version}`;
-            renderWords(
-              "model-b-words",
-              b.important_words || [],
-              b.word_sentiments || [],
-            );
+            document.getElementById("model-b-name").textContent = `${b.model_name} • ${b.version}`;
           }
         }
 
         function updateResultsSingle(data) {
           updateSentimentBadge("model-a-label", data.label);
-          document.getElementById("model-a-confidence").textContent =
-            data.confidence;
-          document.getElementById("model-a-latency").textContent =
-            data.latency_ms;
+          document.getElementById("model-a-confidence").textContent = data.confidence;
+          document.getElementById("model-a-latency").textContent = data.latency_ms;
           updateProgressBar("model-a-progress", data.confidence, data.label);
-          document.getElementById("model-a-name").textContent =
-            `${data.model} • ${data.version}`;
-          renderWords(
-            "model-a-words",
-            data.important_words || [],
-            data.word_sentiments || [],
-          );
-        }
-
-        function renderWords(containerId, words, sentiments) {
-          const container = document.getElementById(containerId);
-          container.innerHTML = "";
-          words.forEach((word, i) => {
-            const span = document.createElement("span");
-            span.textContent = word;
-            span.className = `word-tag ${sentiments[i]}-word`;
-            container.appendChild(span);
-          });
+          document.getElementById("model-a-name").textContent = `${data.model} • ${data.version}`;
         }
 
         // ========== Feedback ==========
         function attachFeedbackListeners() {
           document.querySelectorAll(".feedback-btn").forEach((btn) => {
             btn.addEventListener("click", (e) => {
-              const model =
-                e.target.dataset.model ||
-                e.target.closest(".feedback-btn").dataset.model;
-              const feedback =
-                e.target.dataset.feedback ||
-                e.target.closest(".feedback-btn").dataset.feedback;
+              const model = e.target.dataset.model || e.target.closest('.feedback-btn').dataset.model;
+              const feedback = e.target.dataset.feedback || e.target.closest('.feedback-btn').dataset.feedback;
               const text = inputText.value.trim();
               if (!text) return;
 
-              document
-                .querySelectorAll(`.feedback-btn[data-model="${model}"]`)
+              document.querySelectorAll(`.feedback-btn[data-model="${model}"]`)
                 .forEach((b) => b.classList.remove("selected"));
-              e.target.closest(".feedback-btn")
-                ? e.target.closest(".feedback-btn").classList.add("selected")
-                : e.target.classList.add("selected");
+              e.target.closest('.feedback-btn') ?
+                e.target.closest('.feedback-btn').classList.add("selected") :
+                e.target.classList.add("selected");
 
-              const section = document.querySelector(
-                `.true-label-section[data-model="${model}"]`,
-              );
+              const section = document.querySelector(`.true-label-section[data-model="${model}"]`);
               if (feedback === "incorrect") {
                 section.style.display = "block";
                 section.querySelector("select").value = "";
               } else {
                 section.style.display = "none";
                 const labelEl = document.getElementById(`model-${model}-label`);
-                const confEl = document.getElementById(
-                  `model-${model}-confidence`,
-                );
+                const confEl = document.getElementById(`model-${model}-confidence`);
                 const nameEl = document.getElementById(`model-${model}-name`);
                 sendFeedback({
                   text,
@@ -590,12 +425,8 @@
 
           document.querySelectorAll(".btn-submit-feedback").forEach((btn) => {
             btn.addEventListener("click", async (e) => {
-              const model =
-                e.target.dataset.model ||
-                e.target.closest(".btn-submit-feedback").dataset.model;
-              const section = document.querySelector(
-                `.true-label-section[data-model="${model}"]`,
-              );
+              const model = e.target.dataset.model || e.target.closest('.btn-submit-feedback').dataset.model;
+              const section = document.querySelector(`.true-label-section[data-model="${model}"]`);
               const select = section.querySelector("select");
               const trueLabel = select.value;
               if (!trueLabel) {
@@ -607,9 +438,7 @@
               if (!text) return;
 
               const labelEl = document.getElementById(`model-${model}-label`);
-              const confEl = document.getElementById(
-                `model-${model}-confidence`,
-              );
+              const confEl = document.getElementById(`model-${model}-confidence`);
               const nameEl = document.getElementById(`model-${model}-name`);
 
               await sendFeedback({
@@ -641,7 +470,7 @@
                 payload.feedback === "correct"
                   ? "✅ ขอบคุณสำหรับ feedback!"
                   : "📝 ขอบคุณที่ช่วยปรับปรุงระบบ!",
-                "success",
+                "success"
               );
             } else {
               showToast("ส่ง feedback ไม่สำเร็จ", "error");
